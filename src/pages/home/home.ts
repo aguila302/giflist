@@ -1,9 +1,23 @@
-import { Component } from '@angular/core';
-import { IonicPage, ModalController, Platform } from 'ionic-angular';
-import { Keyboard } from '@ionic-native/keyboard'
-import { DataProvider } from '../../providers/data/data'
-import { RedditProvider } from '../../providers/reddit/reddit'
-import { FormControl } from '@angular/forms'
+import {
+	Component
+} from '@angular/core';
+import {
+	IonicPage,
+	ModalController,
+	Platform
+} from 'ionic-angular';
+import {
+	Keyboard
+} from '@ionic-native/keyboard'
+import {
+	DataProvider
+} from '../../providers/data/data'
+import {
+	RedditProvider
+} from '../../providers/reddit/reddit'
+import {
+	FormControl
+} from '@angular/forms'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/distinctUntilChanged'
@@ -26,13 +40,13 @@ export class HomePage {
 
 	ionViewDidLoad() {
 		this.subredditControl.valueChanges.debounceTime(1500)
-		.distinctUntilChanged().subscribe(subreddit => {
-			if(subreddit != '' && subreddit) {
-				this.redditService.subreddit = subreddit
-				this.changeSubreddit()
-				this.keyboard.close()
-			}
-		})
+			.distinctUntilChanged().subscribe(subreddit => {
+				if (subreddit != '' && subreddit) {
+					this.redditService.subreddit = subreddit
+					this.changeSubreddit()
+					this.keyboard.close()
+				}
+			})
 
 		this.platform.ready().then(() => {
 			this.loadSettings()
@@ -40,7 +54,7 @@ export class HomePage {
 	}
 
 	loadSettings(): void {
-
+		this.redditService.fetchData()
 	}
 	showComments(post): void {
 
@@ -49,7 +63,27 @@ export class HomePage {
 
 	}
 	playVideo(e, post): void {
+		//Create a reference to the video
+		let video = e.target
 
+		if (!post.alreadyLoaded) {
+			post.showLoader = true
+		}
+
+		//Toggle the video playing
+		if (video.paused) {
+			//Show the loader gif
+			video.play()
+
+			//Once the video starts playing, remove the loader gif
+			video.addEventListener("playing", (e) => {
+				post.showLoader = false
+				post.alreadyLoaded = true
+			})
+		}
+		else {
+			video.pause()
+		}
 	}
 	changeSubreddit(): void {
 
